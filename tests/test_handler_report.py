@@ -13,7 +13,7 @@ TEST_LOG2 = os.path.join(os.path.dirname(__file__), "mock_data/mock_log2.log")
 
 def test_get_empty_counts():
     """
-    Тест: функция возвращает словарь с ключами
+    Тест: функция возвращает словарь с ключами.
     """
 
     counts = get_empty_counts()
@@ -25,7 +25,7 @@ def test_get_empty_counts():
 
 def test_process_file_log1():
     """
-    Тест: правильно вычисляется количество записей в логах
+    Тест: правильно вычисляется количество записей в логах.
     """
     result = HandlerReport.process_file(TEST_LOG1)
     assert "/api/v1/reviews/" in result
@@ -68,7 +68,7 @@ def test_process_file_log1():
 
 def test_merge_counts_and_generate_report():
     """
-    Тест: объединет статистику из двух файлов и генерирует отчет
+    Тест: объединет статистику из двух файлов и генерирует отчет.
     """
     result1 = {
         '/api/v1/reviews/': {
@@ -123,7 +123,7 @@ def test_merge_counts_and_generate_report():
 
 def test_generate_report():
     """
-    Тест: создание отчета содержит необходимую информацию
+    Тест: создание отчета содержит необходимую информацию.
     """
     overall = {
         "/api/v1/reviews/": {

@@ -91,7 +91,7 @@ class HandlerReport(BaseReport):
     @classmethod
     def count_total_requests(cls, data: dict[str, dict[str, int]]) -> int:
         """
-        Выполняет подсчет количества запросов
+        Выполняет подсчет количества запросов.
         """
         total = 0
         for levels in data.values():
