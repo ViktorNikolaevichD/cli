@@ -11,18 +11,17 @@ def parse_args() -> argparse.Namespace:
     """
     parser = argparse.ArgumentParser(description="Отчет по лог-файлам")
     parser.add_argument("log_files", nargs="+", help="Пути к лог-файлам")
-    parser.add_argument("--report", type=str, help="Путь к файлу для сохранения отчета")
-    parser.add_argument("--report-type", choices=REPORT_TYPES.keys(), default="handler", help="Тип отчета")
+    parser.add_argument("--report", choices=REPORT_TYPES.keys(), default="handler", help="Тип отчета")
     return parser.parse_args()
 
 
 def main() -> None:
     """
-    Парсит аргументы командной строки, обрабатывает указанные лог-файлы, объединяет полученную статистику,
-    генерирует отчет, выводит его в консоль и сохраняет в файл, если указан аргумент --report.
+    Парсит аргументы командной строки, обрабатывает указанные лог-файлы, объединяет полученную статистику
+    и выводит отчет в консоль.
     """
     args = parse_args()
-    report_class: type[BaseReport] = REPORT_TYPES[args.report_type]
+    report_class: type[BaseReport] = REPORT_TYPES[args.report]
 
     aggregate = report_class.get_initial_aggregate()
 
@@ -35,16 +34,8 @@ def main() -> None:
             result = future.result()
             report_class.merge(aggregate, result)
 
-    report_str = report_class.generate(aggregate)
+    report_str = report_class.generate_report(aggregate)
     print(report_str)
-
-    if args.report:
-        try:
-            with open(args.report, "w", encoding="utf-8") as out_file:
-                out_file.write(report_str)
-            print(f"\nОтчет сохранен в файл: {args.report}")
-        except Exception as e:
-            print(f"Ошибка при записи отчета в файл {args.report}: {e}")
 
 
 if __name__ == "__main__":

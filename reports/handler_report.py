@@ -50,7 +50,7 @@ class HandlerReport(BaseReport):
         return handler_counts
 
     @classmethod
-    def get_initial_aggregate(cls):
+    def get_initial_aggregate(cls) -> dict[str, dict[str, int]]:
         return {}
     
     @classmethod
@@ -65,11 +65,14 @@ class HandlerReport(BaseReport):
                 base[handler][level] += count
     
     @classmethod
-    def generate(cls, data: dict[str, dict[str, int]]) -> str:
+    def generate_report(cls, data: dict[str, dict[str, int]]) -> str:
         """
         Собирает строки отчета в виде таблицы по переданным данным.
         """
-        lines = [HANDLER_HEADER]
+        lines = [
+            f"Total requests: {cls.count_total_requests(data)}",
+            HANDLER_HEADER,
+        ]
         total = get_empty_counts()
 
         for handler in sorted(data.keys()):
@@ -84,3 +87,13 @@ class HandlerReport(BaseReport):
             f"{'TOTAL':30}{total['DEBUG']:8}{total['INFO']:8}{total['WARNING']:8}{total['ERROR']:8}{total['CRITICAL']:10}"
         )
         return "\n".join(lines)
+
+    @classmethod
+    def count_total_requests(cls, data: dict[str, dict[str, int]]) -> int:
+        """
+        Выполняет подсчет количества запросов
+        """
+        total = 0
+        for levels in data.values():
+            total += sum(levels.values())
+        return total

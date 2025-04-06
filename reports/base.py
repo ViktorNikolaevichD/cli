@@ -20,5 +20,10 @@ class BaseReport(ABC):
 
     @classmethod
     @abstractmethod
-    def generate(cls, data: Any) -> str:
+    def generate_report(cls, data: Any) -> str:
+        ...
+
+    @classmethod
+    @abstractmethod
+    def count_total_requests(cls, data: Any) -> int:
         ...

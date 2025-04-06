@@ -146,7 +146,8 @@ def test_generate_report():
             "CRITICAL": 0
         }
     }
-    report = HandlerReport.generate(overall)
+    report = HandlerReport.generate_report(overall)
+    assert "Total requests: 7" in report
     assert HANDLER_HEADER in report
     assert "TOTAL" in report
     assert "/admin/dashboard/" in report
@@ -158,14 +159,14 @@ def test_parse_args(monkeypatch):
     """
     Тест: функция parse_args верно парсит аргументы командной строки.
     """
-    test_args = ["main.py", "file1.log", "file2.log", "--report", "report.txt"]
+    test_args = ["main.py", "file1.log", "file2.log", "--report", "handler"]
     monkeypatch.setattr(sys, "argv", test_args)
     args = parse_args()
     assert args.log_files == ["file1.log", "file2.log"]
-    assert args.report == "report.txt"
+    assert args.report == "handler"
 
     test_args = ["main.py", "file1.log", "file2.log"]
     monkeypatch.setattr(sys, "argv", test_args)
     args = parse_args()
     assert args.log_files == ["file1.log", "file2.log"]
-    assert args.report == None
+    assert args.report == "handler"
