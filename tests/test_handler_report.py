@@ -1,6 +1,8 @@
 import os
 import sys
 
+import pytest
+
 from main import parse_args
 from reports.handler_report import HandlerReport
 from utils.common import HANDLER_HEADER, get_empty_counts
@@ -155,7 +157,7 @@ def test_generate_report():
     assert "/api/v1/reviews/" in report
 
 
-def test_parse_args(monkeypatch):
+def test_parse_args_success(monkeypatch):
     """
     Тест: функция parse_args верно парсит аргументы командной строки.
     """
@@ -165,8 +167,23 @@ def test_parse_args(monkeypatch):
     assert args.log_files == ["file1.log", "file2.log"]
     assert args.report == "handler"
 
-    test_args = ["main.py", "file1.log", "file2.log"]
+
+def test_parse_args_missing_report(monkeypatch):
+    """
+    Тест: ошибка, если не передан --report (обязательный параметр).
+    """
+
+    test_args = ["main.py", "file1.log"]
     monkeypatch.setattr(sys, "argv", test_args)
-    args = parse_args()
-    assert args.log_files == ["file1.log", "file2.log"]
-    assert args.report == "handler"
+    with pytest.raises(SystemExit):
+        parse_args()
+
+
+def test_parse_args_missing_log_files(monkeypatch):
+    """
+    Тест: ошибка, если не передан ни один лог-файл.
+    """
+    test_args = ["main.py", "--report", "handler"]
+    monkeypatch.setattr(sys, "argv", test_args)
+    with pytest.raises(SystemExit):
+        parse_args()

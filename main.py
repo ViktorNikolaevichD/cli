@@ -11,7 +11,7 @@ def parse_args() -> argparse.Namespace:
     """
     parser = argparse.ArgumentParser(description="Отчет по лог-файлам")
     parser.add_argument("log_files", nargs="+", help="Пути к лог-файлам")
-    parser.add_argument("--report", choices=REPORT_TYPES.keys(), help="Тип отчета")
+    parser.add_argument("--report", choices=REPORT_TYPES.keys(), required=True, help="Тип отчета")
     return parser.parse_args()
 
 
