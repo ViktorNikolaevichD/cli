@@ -1,14 +1,9 @@
 import os
 import sys
 
-from main import (
-    generate_report, 
-    get_empty_counts, 
-    merge_counts, 
-    process_file, 
-    HEADER, 
-    parse_args,
-)
+from main import parse_args
+from reports.handler_report import HandlerReport
+from utils.common import HANDLER_HEADER, get_empty_counts
 
 TEST_LOG1 = os.path.join(os.path.dirname(__file__), "mock_data/mock_log1.log")
 TEST_LOG2 = os.path.join(os.path.dirname(__file__), "mock_data/mock_log2.log")
@@ -30,7 +25,7 @@ def test_process_file_log1():
     """
     Тест: правильно вычисляется количество записей в логах
     """
-    result = process_file(TEST_LOG1)
+    result = HandlerReport.process_file(TEST_LOG1)
     assert "/api/v1/reviews/" in result
     assert "/admin/dashboard/" in result
 
@@ -49,7 +44,7 @@ def test_process_file_log1():
     assert admin_counts["CRITICAL"] == 0
 
     # Проверить правильность выполнения для второго файла
-    result = process_file(TEST_LOG2)
+    result = HandlerReport.process_file(TEST_LOG2)
     assert "/admin/dashboard/" in result
     assert "/api/v1/checkout/" in result
 
@@ -107,8 +102,8 @@ def test_merge_counts_and_generate_report():
     }
 
     overall = {}
-    merge_counts(overall, result1)
-    merge_counts(overall, result2)
+    HandlerReport.merge(overall, result1)
+    HandlerReport.merge(overall, result2)
 
     reviews_counts = overall.get("/api/v1/reviews/")
     assert reviews_counts is not None
@@ -151,8 +146,9 @@ def test_generate_report():
             "CRITICAL": 0
         }
     }
-    report = generate_report(overall)
-    assert HEADER in report
+    report = HandlerReport.generate_report(overall)
+    assert "Total requests: 7" in report
+    assert HANDLER_HEADER in report
     assert "TOTAL" in report
     assert "/admin/dashboard/" in report
     assert "/api/v1/checkout/" in report
@@ -163,14 +159,14 @@ def test_parse_args(monkeypatch):
     """
     Тест: функция parse_args верно парсит аргументы командной строки.
     """
-    test_args = ["main.py", "file1.log", "file2.log", "--report", "report.txt"]
+    test_args = ["main.py", "file1.log", "file2.log", "--report", "handler"]
     monkeypatch.setattr(sys, "argv", test_args)
     args = parse_args()
     assert args.log_files == ["file1.log", "file2.log"]
-    assert args.report == "report.txt"
+    assert args.report == "handler"
 
     test_args = ["main.py", "file1.log", "file2.log"]
     monkeypatch.setattr(sys, "argv", test_args)
     args = parse_args()
     assert args.log_files == ["file1.log", "file2.log"]
-    assert args.report == None
+    assert args.report == "handler"
